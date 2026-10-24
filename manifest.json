@@ -1,0 +1,106 @@
+{
+ "revision": "723fcec",
+ "files": {
+  "gretel_text_to_sql.jsonl": {
+   "rows": 5528,
+   "bytes": 2484540,
+   "sha256": "1f2c15cb601a0d7419f16586a7243d6902c7a818a4e1a4c720eb5469ffd3471a"
+  },
+  "payload_box.jsonl": {
+   "rows": 156,
+   "bytes": 56772,
+   "sha256": "02bb128550b711907bf51d700113ab453cc48f0e7514632b1c2cacbeb0a23515"
+  },
+  "agentdojo.jsonl": {
+   "rows": 617,
+   "bytes": 324397,
+   "sha256": "aa9bdb272331ee7a8f6ee93651f43f3b67555b3bcb3280ebd16bf00275e8e050"
+  },
+  "deepset.jsonl": {
+   "rows": 662,
+   "bytes": 240495,
+   "sha256": "b0374c3aa14473491f804bf5473b64cbddb576460a09a94d5a307e0cd612b685"
+  },
+  "spml.jsonl": {
+   "rows": 500,
+   "bytes": 177674,
+   "sha256": "3aefa06c7417ea77d7212198339e611910d4d1b18adfdc4d2ef2b0e39fb4107d"
+  },
+  "yanismiraoui.jsonl": {
+   "rows": 1034,
+   "bytes": 383742,
+   "sha256": "a339bc2753082d4b078ed26aa2d00effa861bdfa4bfe9f3cbe9b0aa87b9b05b7"
+  },
+  "trustairlab.jsonl": {
+   "rows": 2810,
+   "bytes": 1040244,
+   "sha256": "9ed1d3356abe4beb64b5137dc0ca8f49e0dd0a69105644c7be6aae5c052235b5"
+  },
+  "notinject.jsonl": {
+   "rows": 339,
+   "bytes": 123328,
+   "sha256": "0f938159930ed62a4da2742abb90fb6584c165336c239657dde1793acffdfe2d"
+  },
+  "adaptive_attempts.jsonl": {
+   "rows": 2458,
+   "bytes": 1152399,
+   "sha256": "cd78d559d832d99436cff58049ac8664eb560f41cc8e0e528956c740eca42a80"
+  },
+  "kuq.jsonl": {
+   "rows": 4782,
+   "bytes": 1420331,
+   "sha256": "2990069b4b7652136dd73d4c2874e1728057c1369eef10a3a4ad5539ab58993c"
+  },
+  "presidio.jsonl": {
+   "rows": 1500,
+   "bytes": 540570,
+   "sha256": "9af9f6d4f80abc42f3882e8e70deb768b211ed0844c02b27d946b8be096ce5e8"
+  },
+  "gretel_pii.jsonl": {
+   "rows": 5594,
+   "bytes": 2073084,
+   "sha256": "969d07a2cae40907dd2ad27560d6c740d22b2c114aa18d92be1831789b135bc6"
+  },
+  "tab.jsonl": {
+   "rows": 127,
+   "bytes": 46833,
+   "sha256": "a3cadc7cfbe9b75dde7bd305b92e1a07933663b76d7c895524836a867c46ba7e"
+  },
+  "privacylens.jsonl": {
+   "rows": 493,
+   "bytes": 122922,
+   "sha256": "445791076f19df2047ae3052df4e0d272068ad1dbc6da63fb677659a76920d40"
+  },
+  "safepyramid.jsonl.gz": {
+   "rows": 77755,
+   "bytes": 900823,
+   "sha256": "0c7ffa277309c9d5a7db6bcae61d7d56b3faa3903e840b9affd725b332f66cd5"
+  },
+  "atbench.jsonl": {
+   "rows": 1000,
+   "bytes": 281687,
+   "sha256": "0b7ca5983089ef2b4add57e70629adf914a3103a804e1a98d26b9117147870f6"
+  },
+  "atbench500.jsonl": {
+   "rows": 500,
+   "bytes": 171747,
+   "sha256": "5acdb5ed4bd31f50d4098f9e5edca27de3baa8a9cd0588be36dd2c76a395de49"
+  },
+  "atbench_claw.jsonl": {
+   "rows": 500,
+   "bytes": 144371,
+   "sha256": "e043bca80422be775b267357b69406b6baf4338d924a66041adc70e5d2e3b57a"
+  },
+  "refund_replies.jsonl": {
+   "rows": 2160,
+   "bytes": 921120,
+   "sha256": "87745dbb264514a4725ba034b5288323ab9ac11a9785b51b2b7a123c17ecd0c1"
+  }
+ },
+ "excluded": {
+  "rjudge": "no licence in github.com/Lordog/R-Judge",
+  "coconot": "card names both ODC-BY and AI2 ImpACT-LR"
+ },
+ "hosted_judgment_model_per_row": "not redistributed; aggregates only",
+ "normalisation": "NFC; CRLF and CR to LF; strip; non-strings as canonical JSON (sort_keys, ensure_ascii=False, separators (',', ':'))"
+}

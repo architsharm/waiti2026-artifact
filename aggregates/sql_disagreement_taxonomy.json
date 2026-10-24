@@ -1,0 +1,31 @@
+{
+ "max": {
+  "fp": 819,
+  "fn": 43,
+  "fp_buckets": {
+   "bounded_delete": 819
+  },
+  "fn_buckets": {
+   "stacked_policy": 7,
+   "other": 4,
+   "drop_view": 32
+  },
+  "other_examples_n": 4
+ },
+ "aligned": {
+  "fp": 0,
+  "fn": 68,
+  "fp_buckets": {},
+  "fn_buckets": {
+   "stacked_policy": 18,
+   "other": 5,
+   "drop_view": 32,
+   "malformed_variant": 13
+  },
+  "other_examples_n": 5
+ },
+ "parser_tp_via_parse_error": 13,
+ "stacked_positive": 20,
+ "drop_view_rows": 32,
+ "bounded_delete_negatives": 824
+}

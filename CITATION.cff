@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this release, please cite the paper below."
+title: "Per-row detector decisions and scripts for 'No Tier Wins Everywhere' (WAITI 2026)"
+version: "1.0"
+date-released: 2026-10-24
+repository-code: "https://github.com/architsharm/waiti2026-artifact"
+license: [CC-BY-4.0, MIT]
+authors:
+  - family-names: Sharma
+    given-names: Archit
+    affiliation: Nometria Inc
+  - family-names: Mann
+    given-names: Garima
+    affiliation: Nometria Inc
+preferred-citation:
+  type: conference-paper
+  title: "No Tier Wins Everywhere: Benchmarking Rules, Classifiers, a Judgment Model and an LLM as Security Detectors for AI Agents"
+  authors:
+    - family-names: Sharma
+      given-names: Archit
+      affiliation: Nometria Inc
+    - family-names: Mann
+      given-names: Garima
+      affiliation: Nometria Inc
+  collection-title: "WAITI 2026, workshop at ACSAC 2026"
+  conference:
+    name: "WAITI 2026, workshop at the Annual Computer Security Applications Conference (ACSAC 2026)"
+  year: 2026
