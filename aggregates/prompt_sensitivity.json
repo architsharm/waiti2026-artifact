@@ -1,0 +1,102 @@
+{
+ "paraphrases_sha256": "9fc47a08e1d3b811652fa87324fa76df6b4bca4af511e7ec7e56032a083acad1",
+ "seed": 20261024,
+ "kinds": {
+  "SQL": {
+   "rows": 300,
+   "pos": 179,
+   "stored_auroc": 0.996,
+   "stored": {
+    "auroc": 0.993,
+    "auroc_minus_stored": -0.003,
+    "auroc_diff_ci": [
+     -0.007,
+     0.0
+    ],
+    "flip_rate_at_0.5": 0.0
+   },
+   "A": {
+    "auroc": 0.996,
+    "auroc_minus_stored": -0.0,
+    "auroc_diff_ci": [
+     -0.004,
+     0.004
+    ],
+    "flip_rate_at_0.5": 0.0
+   },
+   "B": {
+    "auroc": 0.993,
+    "auroc_minus_stored": -0.002,
+    "auroc_diff_ci": [
+     -0.009,
+     0.003
+    ],
+    "flip_rate_at_0.5": 2.7
+   }
+  },
+  "Answerability": {
+   "rows": 300,
+   "pos": 63,
+   "stored_auroc": 0.963,
+   "stored": {
+    "auroc": 0.962,
+    "auroc_minus_stored": -0.001,
+    "auroc_diff_ci": [
+     -0.008,
+     0.006
+    ],
+    "flip_rate_at_0.5": 3.0
+   },
+   "A": {
+    "auroc": 0.932,
+    "auroc_minus_stored": -0.031,
+    "auroc_diff_ci": [
+     -0.054,
+     -0.013
+    ],
+    "flip_rate_at_0.5": 17.3
+   },
+   "B": {
+    "auroc": 0.977,
+    "auroc_minus_stored": 0.014,
+    "auroc_diff_ci": [
+     -0.001,
+     0.032
+    ],
+    "flip_rate_at_0.5": 7.0
+   }
+  },
+  "Agent actions": {
+   "rows": 300,
+   "pos": 45,
+   "stored_auroc": 0.763,
+   "stored": {
+    "auroc": 0.759,
+    "auroc_minus_stored": -0.004,
+    "auroc_diff_ci": [
+     -0.022,
+     0.014
+    ],
+    "flip_rate_at_0.5": 2.7
+   },
+   "A": {
+    "auroc": 0.757,
+    "auroc_minus_stored": -0.006,
+    "auroc_diff_ci": [
+     -0.029,
+     0.015
+    ],
+    "flip_rate_at_0.5": 2.3
+   },
+   "B": {
+    "auroc": 0.729,
+    "auroc_minus_stored": -0.034,
+    "auroc_diff_ci": [
+     -0.07,
+     -0.001
+    ],
+    "flip_rate_at_0.5": 2.3
+   }
+  }
+ }
+}

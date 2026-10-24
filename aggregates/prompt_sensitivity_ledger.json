@@ -1,0 +1,20 @@
+{
+ "paraphrases_sha256": "9fc47a08e1d3b811652fa87324fa76df6b4bca4af511e7ec7e56032a083acad1",
+ "cap_usd": 0.1,
+ "usd_per_question_counted": 1e-05,
+ "questions_sent": 4500,
+ "usd_counted": 0.045,
+ "requests": 2700,
+ "errors": 0,
+ "events": [
+  {
+   "t": "2026-10-24T04:11:31Z",
+   "event": "paraphrases frozen"
+  },
+  {
+   "t": "2026-10-24T04:13:24Z",
+   "event": "run finished",
+   "rows_scored": 2700
+  }
+ ]
+}

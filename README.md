@@ -31,15 +31,18 @@ python3 verify.py     # standard library only
 
 It recomputes the paper's headline numbers from `rows/` and compares them with `paper_numbers.tex` (a
 copy of the paper's generated macros) and with the per-dataset cells of `aggregates/camera_ready.json`,
-the file the appendix tables are generated from. At release it prints `96 checks passed, 0 failed`.
+the file the appendix tables are generated from. At release it prints `125 checks passed, 0 failed`.
 The numbers recomputed from rows include:
 
 - the SQL parser's counts and the AgentDojo counts;
 - PIGuard and ProtectAI on NotInject and the external injection sets;
 - the training-overlap counts;
+- from the recomputed classifier scores: agreement with the stored flags, pooled and per-set AUROC, and TPR at 1% FPR;
+- per-suite provenance totals against the summary file (aggregate level only);
+- the wording-check macros against `aggregates/prompt_sensitivity.json` (aggregate level only);
 - the PII counts and the native detector's rates;
 - the LLM's SafePyramid accuracies by level;
-- tp/pos/fp/neg for every released code, classifier and LLM cell of Table 6.
+- tp/pos/fp/neg for every released code, classifier and LLM cell of Table 7.
 
 For the judgment model the checks are at the aggregate level: every judgment-model cell of
 `camera_ready.json` must have the row count and positive/negative split of the released labels (and of
@@ -53,7 +56,7 @@ AUROCs) must equal those cells.
 |---|---|
 | `rows/*.jsonl` (`.jsonl.gz` above 5 MB) | One file per dataset, one JSON object per row |
 | `aggregates/` | Numbers the paper reports where per-row data is not released (all judgment-model results) or was not stored, and the analysis outputs the tables are generated from (no text) |
-| `audit/` | Appendix D, the SQL label audit: blind labels and notes (produced by an LLM coding assistant, as the paper discloses), the audit-id to row key, the result, and the sampling and scoring scripts. The blind sheet with the sampled SQL text is not included; `sql_audit_sample.py` rebuilds it from `benchmarks/action_safety/data/action_safety.json` in AgentFox at `723fcec` |
+| `audit/` | Appendix B, the SQL label audit: blind labels and notes (produced by an LLM coding assistant, as the paper discloses), the audit-id to row key, the result, and the sampling and scoring scripts. The blind sheet with the sampled SQL text is not included; `sql_audit_sample.py` rebuilds it from `benchmarks/action_safety/data/action_safety.json` in AgentFox at `723fcec` |
 | `prompts.json` | Every judgment-model question and the LLM's policy-rule prompt, verbatim (our prompts) |
 | `paper_numbers.tex` | The paper's generated numbers, as built |
 | `manifest.json` | Row count, size and SHA-256 of every row file; the excluded datasets |
@@ -67,20 +70,22 @@ AUROCs) must equal those cells.
 | Paper | Files |
 |---|---|
 | Table 1 (datasets) | row counts in `manifest.json` |
-| Sec. 3.1, SQL; Table 6 rows 1-2 | `gretel_text_to_sql`, `payload_box`; `aggregates/sql_question_alignment.json`, `aggregates/sql_disagreement_taxonomy.json` |
-| Appendix D (SQL label audit) | `audit/`; its key maps to `row_key` in `gretel_text_to_sql` |
-| Sec. 3.2, AgentDojo; Table 6 row 3 | `agentdojo` (use `in_paper_unique_calls`), `aggregates/agentdojo_inferred_provenance_summary.json` |
-| Table 3 (injection tiers on identical rows) | `adaptive_attempts` (the 165 rows with `escaped_shipped_detectors`), `notinject`, `aggregates/injection_table.json` |
-| Table 4 (external injection sets), Sec. 3.3 overlap, Appendix E | `deepset`, `spml`, `yanismiraoui`, `trustairlab`, `notinject`; `aggregates/classifier_overlap.json`, `aggregates/dedup_injection.json` |
+| Sec. 3.1, SQL; Table 7 rows 1-2 | `gretel_text_to_sql`, `payload_box`; `aggregates/sql_question_alignment.json`, `aggregates/sql_disagreement_taxonomy.json` |
+| Appendix B (SQL label audit) | `audit/`; its key maps to `row_key` in `gretel_text_to_sql` |
+| Sec. 3.2, AgentDojo; Table 7 row 3 | `agentdojo` (use `in_paper_unique_calls`), `aggregates/agentdojo_inferred_provenance_summary.json` |
+| Table 3 (provenance by suite) | `aggregates/provenance_suites.json` (recomputed from the per-call decisions of the replay at `723fcec`; the per-call decisions themselves are not in this release) |
+| Table 4 (injection tiers on identical rows) | `adaptive_attempts` (the 165 rows with `escaped_shipped_detectors`), `notinject`, `aggregates/injection_table.json` |
+| Table 5 (external injection sets), Sec. 3.3 overlap and recomputed scores, Appendix C | `deepset`, `spml`, `yanismiraoui`, `trustairlab`, `notinject`; `aggregates/classifier_overlap.json`, `aggregates/dedup_injection.json`, `aggregates/classifier_scores.json` |
 | Sec. 3.4, answerability, PII, entitlement | `kuq`, `presidio`, `gretel_pii`, `tab`, `privacylens` |
-| Sec. 3.5, policy rules; Table 10 | `safepyramid` (one row per case and rule); `aggregates/camera_ready.json` under `policy_roles` |
+| Sec. 3.5, policy rules; Table 12 | `safepyramid` (one row per case and rule); `aggregates/camera_ready.json` under `policy_roles` |
 | Sec. 3.6, trajectories; Fig. 1 | `atbench`, `atbench500`, `atbench_claw` (labels); judgment-model results in `aggregates/camera_ready.json` |
 | Commitments | `refund_replies` |
-| Table 6 (every dataset and tier), Tables 7 to 9, Fig. 2 | all of the above; `aggregates/camera_ready.json`, `aggregates/calibration_split.json` |
+| Table 7 (every dataset and tier), Tables 8 to 10, Fig. 2 |
+| Table 11 and Sec. 7 (judgment-model wording check) | `prompt_paraphrases.json` (paraphrases and sample, stated before scoring), `aggregates/prompt_sensitivity.json`, `aggregates/prompt_sensitivity_ledger.json` (calls and cost); per-row outputs of this run are not released | all of the above; `aggregates/camera_ready.json`, `aggregates/calibration_split.json` |
 
 **What is not per row.** All judgment-model results are aggregates only (see above), so the
 `privacylens`, `atbench`, `atbench500`, `atbench_claw` and `refund_replies` files carry labels,
-identifiers and halves but no judgment-model decision. In Table 3, per-row decisions exist only for the
+identifiers and halves but no judgment-model decision. In Table 4, per-row decisions exist only for the
 shipped pattern detectors (on the escapes) and for PIGuard and ProtectAI on NotInject (from the
 external-set run). The classifiers' and ensemble's decisions on the 165 escapes and the 467 held-out
 benign prompts were stored only as counts. Those counts, and the judgment model's, are in
@@ -132,7 +137,7 @@ Common to every row:
 | `source_id` | the dataset's own ID where it has one (TAB `doc_id`, PrivacyLens `name`, AgentDojo suite/task/function, SafePyramid case `id`, ATBench `id`, ATBench500 `conv_id`), else `null` |
 | `source_path`, `source_index` | file (in AgentFox at `723fcec`, or the upstream release named) and 0-based index in it |
 | `text_sha256` | see above |
-| `label` | gold label as standardised in the paper: `true` = should be flagged (Table 6 says what positive means per dataset) |
+| `label` | gold label as standardised in the paper: `true` = should be flagged (Table 7 says what positive means per dataset) |
 | `calib_split` | `dev` or `test`: the random half (seed 11) used to choose a judgment-model threshold (`dev`) and report it (`test`), per decision kind; `null` where no threshold is chosen. Policy rules are split by conversation |
 
 Tier columns (present where the tier applies):
@@ -145,7 +150,8 @@ Tier columns (present where the tier applies):
 | `code_rules_flag` | shipped answerability rules |
 | `code_native_flag` | shipped native PII detector |
 | `code_authorised` | the refund rule computed from the request |
-| `piguard_flag`, `protectai_flag` | the open classifiers at their shipped thresholds (labels, not scores) |
+| `piguard_flag`, `protectai_flag` | the open classifiers at their shipped thresholds, as stored by the original run |
+| `piguard_score_recomputed`, `protectai_score_recomputed` | injection-class probability recomputed after the run with the shipped adapter's input handling (first 4,000 characters, local model files, six decimals); at 0.5 it reproduces the stored flag on 5,342 (PIGuard) and 5,341 (ProtectAI) of 5,345 rows; `aggregates/classifier_scores.json` lists the others |
 | `llm_flag` | Claude Haiku 4.5 says this rule is violated (SafePyramid 600-conversation subset only) |
 | `provenance_replay` | AgentDojo: tool impact class and the capability-policy verdict in the ground-truth replay, detectors off and on |
 | `in_piguard_train`, `in_jackhhao_train` | row text, normalised (NFKC, lower case, non-word runs to one space), occurs in PIGuard's released `datasets/train.json` (sha256 `806ded8bd85782a53d34faffe4fd92b3f2e0b3b431c43578ce77faea6b9ed911`), or in its `jailbreak-classification` part, which ProtectAI's card also lists |
@@ -219,14 +225,14 @@ when you use its rows.
 - **R-Judge** ([Lordog/R-Judge](https://github.com/Lordog/R-Judge), 571 rows). The repository has no
   licence, so nothing grants redistribution.
 
-The paper's aggregate numbers for both (Table 6, `aggregates/camera_ready.json`) are unchanged. The
+The paper's aggregate numbers for both (Table 7, `aggregates/camera_ready.json`) are unchanged. The
 dev/test halves of the answerability and trajectory kinds include their rows, so a recomputation from
 this release alone covers KUQ and the three ATBench corpora only.
 
 ## Prompts
 
 `prompts.json` holds the judgment model's questions for every decision kind and the LLM's policy-rule
-prompt, as extracted from the run scripts and the detector source at AgentFox `723fcec`. Appendix F of
+prompt, as extracted from the run scripts and the detector source at AgentFox `723fcec`. Appendix D of
 the paper prints the two policy-rule prompts.
 
 ## Licence

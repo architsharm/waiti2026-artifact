@@ -243,6 +243,8 @@ HEUR = {
     "trustairlab": "benchmarks/results_generalization/heuristic_trustairlab_predictions.json",
     "notinject": "benchmarks/results_generalization/heuristic_notinject_predictions.json",
 }
+# probabilities recomputed after the run (classifier_scores.py, from forge2027-followon local_scores.json)
+CS_ROWS = json.loads((HERE / "classifier_scores_rows.json").read_text())
 for name, (data, path) in INJ.items():
     hb = {r["text"]: bool(r["predicted"]) for r in bench(HEUR[name])}
     out = []
@@ -265,6 +267,8 @@ for name, (data, path) in INJ.items():
             "code_patterns_flag": hb[r["text"]],
             "piguard_flag": bool(lo["piguard"]),
             "protectai_flag": bool(lo["protectai"]),
+            "piguard_score_recomputed": CS_ROWS[f"{name}/{i}"]["piguard"],
+            "protectai_score_recomputed": CS_ROWS[f"{name}/{i}"]["protectai"],
             "in_piguard_train": n in pig_all,
             "in_jackhhao_train": n in pig_jack,
         }
@@ -616,7 +620,7 @@ OB = json.loads(
 (agg / "injection_table.json").write_text(
     json.dumps(
         {
-            "note": "Table 3. Per-row decisions on these 165 + 339 + 467 rows were stored only for the shipped pattern "
+            "note": "Table 4. Per-row decisions on these 165 + 339 + 467 rows were stored only for the shipped pattern "
             "detectors (adaptive_attempts, notinject) and for PIGuard/ProtectAI on NotInject; the judgment model's "
             "corrected-wording decisions and the classifiers' decisions on the escapes and held-out rows were stored as counts.",
             "judgment_model": {
@@ -646,6 +650,10 @@ for f in (
     "decision_counts.json",
     "decision_counts_corrected.json",
     "sql_question_alignment.json",
+    "classifier_scores.json",
+    "provenance_suites.json",
+    "prompt_sensitivity.json",  # aggregates of the paid wording check; per-row outputs are not released
+    "prompt_sensitivity_ledger.json",
 ):
     shutil.copy(HERE / f, agg / f)
 # the taxonomy's other_examples name individual rows the judgment model missed (per-row output),
@@ -657,7 +665,8 @@ if not KEEP_JEV_ROWS:
             v["other_examples_n"] = len(v.pop("other_examples"))
 (agg / "sql_disagreement_taxonomy.json").write_text(json.dumps(tax, indent=1) + "\n")
 shutil.copy(HERE / "prompts.json", OUT / "prompts.json")
-# SQL label audit (Appendix D): blind labels with notes, the id key, the result and both scripts.
+shutil.copy(HERE / "prompt_paraphrases.json", OUT / "prompt_paraphrases.json")
+# SQL label audit (Appendix B): blind labels with notes, the id key, the result and both scripts.
 # sql_audit_blind.json is left out: it holds the sampled SQL text.
 (OUT / "audit").mkdir(exist_ok=True)
 for f in (

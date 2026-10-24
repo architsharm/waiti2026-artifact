@@ -1,5 +1,5 @@
 {
- "note": "Table 3. Per-row decisions on these 165 + 339 + 467 rows were stored only for the shipped pattern detectors (adaptive_attempts, notinject) and for PIGuard/ProtectAI on NotInject; the judgment model's corrected-wording decisions and the classifiers' decisions on the escapes and held-out rows were stored as counts.",
+ "note": "Table 4. Per-row decisions on these 165 + 339 + 467 rows were stored only for the shipped pattern detectors (adaptive_attempts, notinject) and for PIGuard/ProtectAI on NotInject; the judgment model's corrected-wording decisions and the classifiers' decisions on the escapes and held-out rows were stored as counts.",
  "judgment_model": {
   "escapes_caught": "160/165",
   "notinject_false_blocks": 9,

@@ -83,7 +83,7 @@ def cell(ds: str, tier: str, rows, flag) -> None:
 
 
 
-# ------------------------------------------------------------------ SQL (Sections 3.1, Table 6)
+# ------------------------------------------------------------------ SQL (Sections 3.1, Table 7)
 sql = load("gretel_text_to_sql")
 tp, pos, fp, neg = counts(sql, lambda r: r["code_parser_flag"])
 check("SQLn", f"{len(sql):,}", MAC["SQLn"])
@@ -114,7 +114,7 @@ check("ADjevFP (aggregate)", f"{c['fp']}/{c['neg']}", MAC["ADjevFP"])
 check("ADjevAUROC (aggregate)", f"{c['auroc']:.3f}", MAC["ADjevAUROC"])
 jev_half("Agent actions", ad)
 
-# ------------------------------------------------------------------ injection (Sections 3.3, Tables 3 and 4)
+# ------------------------------------------------------------------ injection (Sections 3.3, Tables 4 and 5)
 NAMES = {
     "deepset": "deepset",
     "spml": "SPML",
@@ -129,8 +129,8 @@ for k, ds in NAMES.items():
     cell(ds, "ProtectAI", inj[k], lambda r: r["protectai_flag"])
 ni = inj["notinject"]
 check("INJni", len(ni), MAC["INJni"])
-check("Table 3 PIGuard FP NotInject", f"{sum(r['piguard_flag'] for r in ni)}/339", "39/339")
-check("Table 3 ProtectAI FP NotInject", f"{sum(r['protectai_flag'] for r in ni)}/339", "148/339")
+check("Table 4 PIGuard FP NotInject", f"{sum(r['piguard_flag'] for r in ni)}/339", "39/339")
+check("Table 4 ProtectAI FP NotInject", f"{sum(r['protectai_flag'] for r in ni)}/339", "148/339")
 dp, tr = inj["deepset"], inj["trustairlab"]
 check("OVdeepN", len(dp), MAC["OVdeepN"])
 check("OVdeepIn", sum(r["in_piguard_train"] for r in dp), MAC["OVdeepIn"])
@@ -152,9 +152,69 @@ check("OVtrustPaiFPR", pct(c[2], c[3]), MAC["OVtrustPaiFPR"])
 adapt = load("adaptive_attempts")
 esc = [r for r in adapt if r["escaped_shipped_detectors"]]
 check("INJpos (escapes)", len(esc), MAC["INJpos"])
-check("Table 3 patterns recall on escapes", sum(r["code_shipped_flag"] for r in esc), 0)
+check("Table 4 patterns recall on escapes", sum(r["code_shipped_flag"] for r in esc), 0)
 check("OVescIn", sum(r["in_piguard_train"] for r in esc), MAC["OVescIn"])
 check("INJseeds", len({r["seed_id"] for r in esc}), MAC["INJseeds"])
+
+
+# recomputed classifier probabilities (Sec. 3.3, Tables 7 and 8): reproduction, AUROC and TPR at 1% FPR
+def auroc(scores, labels) -> float:
+    n_pos = sum(labels)
+    n_neg = len(labels) - n_pos
+    pairs = sorted(zip(scores, labels), key=lambda t: t[0])
+    rank_sum, i = 0.0, 0
+    while i < len(pairs):
+        j = i
+        while j < len(pairs) and pairs[j][0] == pairs[i][0]:
+            j += 1
+        rank_sum += (i + 1 + j) / 2 * sum(1 for _, y in pairs[i:j] if y)
+        i = j
+    return (rank_sum - n_pos * (n_pos + 1) / 2) / (n_pos * n_neg)
+
+
+def tpr1(scores, labels) -> str:
+    pos, neg, best = sum(labels), len(labels) - sum(labels), 0
+    for t in sorted(set(scores), reverse=True):
+        tp = sum(s >= t and y for s, y in zip(scores, labels))
+        fp = sum(s >= t and not y for s, y in zip(scores, labels))
+        if fp / neg <= 0.01 and tp > best:
+            best = tp
+    return f"{100 * best / pos:.1f}"
+
+
+allinj = [r for k in NAMES for r in inj[k]]
+for tier, tag in (("piguard", "Pig"), ("protectai", "Pai")):
+    key = f"{tier}_score_recomputed"
+    check(f"CSrep{tag}", f"{sum((r[key] >= 0.5) == r[tier + '_flag'] for r in allinj):,}", MAC[f"CSrep{tag}"])
+    y = [r["label"] for r in allinj]
+    s = [r[key] for r in allinj]
+    check(f"CS{tag}AUROC", f"{auroc(s, y):.3f}", MAC[f"CS{tag}AUROC"])
+    check(f"CS{tag}TPRone", tpr1(s, y), MAC[f"CS{tag}TPRone"])
+    rows_t = inj["trustairlab"]
+    check(f"CS{tag}TrustTPRone", tpr1([r[key] for r in rows_t], [r["label"] for r in rows_t]), MAC[f"CS{tag}TrustTPRone"])
+    k6 = {"deepset": "deepset", "spml": "SPML", "trustairlab": "TrustAIRLab"}
+    for k, ds in k6.items():
+        a = auroc([r[key] for r in inj[k]], [r["label"] for r in inj[k]])
+        check(f"Table 7 AUROC {ds} {tier}", f"{a:.3f}", f"{json.loads((HERE / 'aggregates' / 'classifier_scores.json').read_text())['per_set'][ds][tier]['auroc']:.3f}")
+check("CSrepN", f"{len(allinj):,}", MAC["CSrepN"])
+
+# per-suite provenance (Table 3): suites add up to the totals of the summary file
+PS = json.loads((HERE / "aggregates" / "provenance_suites.json").read_text())["settings"]
+PSUM = json.loads((HERE / "aggregates" / "agentdojo_inferred_provenance_summary.json").read_text())["conditions"]
+for name, cond in (("session", "inferred_session_taint"), ("argument", "inferred_argument_taint"),
+                   ("session, read-only exempt", "inferred_session_taint_tiered"),
+                   ("argument, read-only exempt", "inferred_argument_taint_tiered")):
+    per = PS[name]["per_suite"]
+    for m, field in (("BU", "benign_tasks_allowed"), ("ACT", "acting_calls_contained")):
+        got = f"{sum(v[m][0] for v in per.values())}/{sum(v[m][1] for v in per.values())}"
+        check(f"Table 3 {name} {m} total", got, PSUM[cond][field]["fraction"])
+PSN = json.loads((HERE / "aggregates" / "prompt_sensitivity.json").read_text())["kinds"]
+check("PSNansFlipA (aggregate)", f"{PSN['Answerability']['A']['flip_rate_at_0.5']:.1f}", MAC["PSNansFlipA"])
+check("PSNansFlipB (aggregate)", f"{PSN['Answerability']['B']['flip_rate_at_0.5']:.1f}", MAC["PSNansFlipB"])
+check("PSNansFlipRe (aggregate)", f"{PSN['Answerability']['stored']['flip_rate_at_0.5']:.1f}", MAC["PSNansFlipRe"])
+check("PSNsqlFlipMax (aggregate)", f"{max(PSN['SQL'][c]['flip_rate_at_0.5'] for c in ('A', 'B')):.1f}", MAC["PSNsqlFlipMax"])
+check("PSNrows (aggregate)", PSN["SQL"]["rows"], MAC["PSNrows"])
+check("PStravelSRO", "{}/{}".format(*PS["session, read-only exempt"]["per_suite"]["travel"]["BU"]), MAC["PStravelSRO"])
 
 # ------------------------------------------------------------------ answerability (KUQ; CoCoNot rows not released)
 kuq = load("kuq")
